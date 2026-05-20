@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Customer Registration</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #1976d2;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    button {
+      background: #1976d2;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #125ea7;
+    }
+
+    #status {
+      margin-top: 10px;
+      text-align: center;
+      color: green;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h2>Customer Registration</h2>
+
+  <input type="text" id="name" placeholder="Customer Name">
+
+  <input type="text" id="phone" placeholder="Phone Number">
+
+  <input type="text" id="businessName" placeholder="Business Name">
+
+  <input type="text" id="address" placeholder="Address">
+
+  <select id="customerType">
+    <option value="">Select Customer Type</option>
+    <option value="Home">Home</option>
+    <option value="Restaurant">Restaurant</option>
+    <option value="Shop">Shop</option>
+    <option value="Office">Office</option>
+  </select>
+
+  <button onclick="captureGPS()">
+    Capture Current Location
+  </button>
+
+  <p id="status"></p>
+
+  <button onclick="submitForm()">
+    Submit Customer
+  </button>
+
+</div>
+
+<script>
+
+let gpsLink = "";
+
+function captureGPS() {
+
+  if (navigator.geolocation) {
+
+    navigator.geolocation.getCurrentPosition(
+
+      function(position) {
+
+        let lat = position.coords.latitude;
+        let lng = position.coords.longitude;
+
+        gpsLink = "https://maps.google.com/?q=" + lat + "," + lng;
+
+        document.getElementById("status").innerHTML =
+          "GPS Captured Successfully";
+
+      },
+
+      function(error) {
+
+        alert("Unable to capture GPS");
+
+      }
+
+    );
+
+  } else {
+
+    alert("Geolocation not supported");
+
+  }
+
+}
+
+function submitForm() {
+
+  let name =
+    document.getElementById("name").value;
+
+  let phone =
+    document.getElementById("phone").value;
+
+  let businessName =
+    document.getElementById("businessName").value;
+
+  let address =
+    document.getElementById("address").value;
+
+  let customerType =
+    document.getElementById("customerType").value;
+
+  if (!name || !phone || !businessName || !address || !customerType) {
+
+    alert("Please fill all fields");
+    return;
+
+  }
+
+  if (!gpsLink) {
+
+    alert("Please capture GPS location first");
+    return;
+
+  }
+
+  let formURL =
+    "https://docs.google.com/forms/d/e/1FAIpQLSd3IUviilc8jF7BqtTH82IBZrFkWH3daArskCQjASB-BiudQw/formResponse?" +
+
+    "entry.1186913983=" + encodeURIComponent(name) +
+
+    "&entry.1305832912=" + encodeURIComponent(phone) +
+
+    "&entry.126525846=" + encodeURIComponent(customerType) +
+
+    "&entry.333194105=" + encodeURIComponent(businessName) +
+
+    "&entry.413988954=" + encodeURIComponent(address) +
+
+    "&entry.1650837043=" + encodeURIComponent(gpsLink);
+
+  fetch(formURL, {
+
+    method: "POST",
+    mode: "no-cors"
+
+  });
+
+  alert("Customer Registered Successfully");
+
+  document.getElementById("name").value = "";
+  document.getElementById("phone").value = "";
+  document.getElementById("businessName").value = "";
+  document.getElementById("address").value = "";
+  document.getElementById("customerType").value = "";
+  document.getElementById("status").innerHTML = "";
+
+  gpsLink = "";
+
+}
+
+</script>
+
+</body>
+</html>
